@@ -2,34 +2,37 @@
 
 const model = require('../models/moviesByYearModel');
 
-exports.getMoviesByYear = (req, res) => {
+exports.getMoviesByYear = async (req, res) => {
   const title = req.query.Title;
   let page = 1;
   let totalPages = 1;
   let total = 0;
+  let request_counter = 0;
   const moviesByYear = [];
 
-  const getMovies = () => {
-    if (page <= totalPages) {
-      model.getMoviesByTitle(title, page, movies => {
-        totalPages = movies.total_pages;
-        total += movies.data.length;
-        movies.data.forEach(movie => {
-          const i = moviesByYear.findIndex(m => m.year === movie.Year);
-          if (i === -1)
-            moviesByYear.push({ year: movie.Year, movies: 1 }); //not found, so initialize
-          else
-            moviesByYear[i].movies++;
-        });
-
-        page++;
-        getMovies(); //recursive callback due to the async nature of the request
+  const getMovies = async () => {
+    await model.getMoviesByTitle(title, page, movies => {
+      request_counter++;
+      totalPages = movies.total_pages;
+      total += movies.data.length;
+      movies.data.forEach(movie => {
+        const i = moviesByYear.findIndex(m => m.year === movie.Year);
+        if (i === -1)
+          moviesByYear.push({ year: movie.Year, movies: 1 }); //not found, so initialize
+        else
+          moviesByYear[i].movies++;
       });
-    }
-    else {
-      res.json({ moviesByYear, total }); //forwards the complete response
-    }
+      if (request_counter === totalPages) {
+        moviesByYear.sort((a, b) => a.year - b.year); //sort ascending by year
+        res.json({ moviesByYear, total }); //forwards the completed response
+      }
+    });
   }
 
-  getMovies();
+  await getMovies(); //query/await once first to get the total pages
+
+  while (page < totalPages) {
+    page++;
+    getMovies(); //dispatch all the queries async
+  }
 };

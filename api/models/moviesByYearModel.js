@@ -1,11 +1,11 @@
 'use strict'
 
-const request = require('request');
+const request = require('request-promise');
 const rest = require('../utils/restUtils');
 
 const url = 'https://jsonmock.hackerrank.com/api/movies/search/';
 
-exports.getMoviesByTitle = (title, page, response) => {
+exports.getMoviesByTitle = async (title, page, callback) => {
   const params = {
     Title: title,
     page: page,
@@ -13,10 +13,10 @@ exports.getMoviesByTitle = (title, page, response) => {
 
   const query = rest.buildGetQuery(url, params);
 
-  request(query, { json: true }, (err, res, body) => {
+  await request(query, { json: true }, (err, res, body) => {
     if (err)
       return console.log(err);
     else
-      response(body);
+      callback(body);
   });
 }
