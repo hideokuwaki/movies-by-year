@@ -31,8 +31,8 @@ exports.getMoviesByYear = async (req, res) => {
 
   await getMovies(); //query/await once first to get the total pages
 
-  while (page < totalPages) {
+  while (page < totalPages) { //dispatch all the queries async
     page++;
-    getMovies(); //dispatch all the queries async
+    getMovies();
   }
 };
