@@ -3,8 +3,9 @@
 
   - Instalar node.js
   - Clonar este repositório
-  - npm i
-  - Ir até o diretório onde foi feito o clone e executar `node server.js`
+  - Ir até o diretório onde foi feito o clone e executar:
+    - `npm install`
+    - `node server.js`
 
 Alternativamente:
 
