@@ -22,7 +22,7 @@ exports.getMoviesByYear = async (req, res) => {
         else
           moviesByYear[i].movies++;
       });
-      if (request_counter === totalPages) {
+      if (request_counter >= totalPages) {
         moviesByYear.sort((a, b) => a.year - b.year); //sort ascending by year
         res.json({ moviesByYear, total }); //forwards the completed response
       }
